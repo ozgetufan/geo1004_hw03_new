@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include "map"
+#include <string>
 #include "Points.h"
 #include "json-develop/single_include/nlohmann/json.hpp"
 using json = nlohmann::json;
@@ -12,9 +13,39 @@ void readGEOJSON (const char *file_in){
     std::ifstream i(file_in);
     json j;
     i >> j;
-    std::vector<std::vector<double>> coordinates;
-//    coordinates.push_back(j["features"]["geometry"]["coordinates"]);
-    std::cout<<j<<std::endl;
+
+    for (int t = 0; t < j["features"].size(); t++){
+        // Get the coordinates
+        std::string x = j["features"][t]["properties"]["_coordinates"];
+        std::cout << x << std::endl;
+        std::string new_s;
+        std::string second;
+        std::stringstream s(x);
+        std::stringstream p;
+        std::vector<double> coord;
+
+        while (std::getline(s, new_s, '|')){
+            std::stringstream b(new_s);
+            while (std::getline(b, second, ',')){
+                double d = std::stod(second); // I tried to convert also to double here but we lose precision
+                coord.push_back(d);
+            }
+
+        }
+        std::cout << coord[0] << std::endl;
+        std::cout << coord[1] << std::endl;
+        std::cout << coord[2] << std::endl;
+    }
+
+
+
+
+
+
+//    for(int x = 0; x < j["features"].size(); x++){
+//
+//    }
+
 }
 
 std::map<int,Point> vmap;
