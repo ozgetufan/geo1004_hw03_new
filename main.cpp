@@ -33,30 +33,86 @@ void readGEOJSON (const char *file_in){
 //
 //        }
         std::vector<Point> Points;
+        std::vector<Point> floor_faces;
+        std::vector<Point> roof_faces;
+        std::vector<std::vector<Point>> all_vertices;
+        std::vector<std::vector<Point>> all_floor;
+        std::vector<Point> all_floor_new;
+        std::vector<Point> all_roof_new;
+        std::vector<std::vector<Point>> all_roof;
         auto features = j["features"];
         for (auto &all:features){
             auto coordinates =all["geometry"]["coordinates"];
+//            std::cout << coordinates[0].back() << std::endl;
             auto id = all["properties"]["identificatie"];
             auto year_of_construction =all["properties"]["bouwjaar"];
             double roof_height = all["properties"]["z.median"];
             auto storeys = ceil(roof_height/3);
             std::vector<std::vector<Point>> faces;
-            std::vector<Point> floor_faces;
-            for (auto coord:coordinates){
-                std::cout<<coord[0]<<std::endl;
-                for (auto point:coord){
-                    Point base ={point[0],point[1],point[2]};
-                    floor_faces.push_back(base);
-                }
+            std::vector<Point> floor_vertices;
+            std::vector<Point> roof_vertices;
 
+            for (auto coord:coordinates) {
+//                std::cout<<coord[0]<<std::endl;
+                for (int x = 0; x < coord.size() - 1; x++) {
+                    Point base = {coord[x][0], coord[x][1], coord[x][2]};
+                    Point roof = {coord[x][0], coord[x][1], roof_height};
+                    all_floor_new.push_back(base);
+                    all_roof_new.push_back(roof);
+                    floor_vertices.push_back(base);
+                    roof_vertices.push_back(roof);
+//                    std::cout << all_floor_new.size() << std::endl;
+                }
             }
+            all_floor.push_back(floor_vertices);
+            all_roof.push_back(roof_vertices);
+//                for (auto point:coord){
+//                    Point base ={point[0],point[1],point[2]};
+//                    Point roof ={point[0],point[1], roof_height};
+//                    all_floor_new.push_back(base);
+//                    all_roof_new.push_back(roof);
+//                }
 
         }
-//        std::cout << coord[0] << std::endl;
-//        std::cout << coord[1] << std::endl;
-//        std::cout << coord[2] << std::endl;
 
+    std::cout << all_floor.size() << std::endl;
+    std::cout << all_roof.size() << std::endl;
+    std::cout << features.size() << std::endl;
+
+
+
+    for (int a = 0; a < all_floor_new.size()-1; a++) {
+
+        std::vector<Point> wall;
+        wall.push_back(all_floor_new[a]);
+        wall.push_back(all_floor_new[a+1]);
+        wall.push_back(all_roof_new[a+1]);
+        wall.push_back(all_roof_new[a]);
+        all_faces.push_back(wall);
     }
+
+    int k = 0;
+    std::vector<std::vector<std::vector<Point>>> all_faces;
+    for(auto build: all_floor){
+        std::vector<std::vector<Point>> all_walls;
+        std::vector<Point> wall;
+        for(int a = 0; a < build.size()-1; a++){
+            wall.push_back(build[a]);
+            wall.push_back(build[a+1]);
+            wall.push_back(all_roof[k][a+1]);
+            wall.push_back(all_roof[k][a]);
+            k++;
+        }
+        all_walls.push_back(wall);
+        all_faces.push_back(all_walls);
+    }
+
+//
+//    std::cout << "all_faces" << all_faces.size() << std::endl;
+//    std::cout << all_faces[0][0].x << std::endl;
+//    std::cout << all_faces[0][0].y << std::endl;
+//    std::cout << all_faces[0][0].z << std::endl;
+}
 
 
 
