@@ -356,10 +356,14 @@ int main(int argc, const char * argv[]) {
                           for (int e = 0; e < all_faces[i].size(); e++){
                               output_file << "\t\t\t\t[[";
                               for (int q = 0; q < all_faces[e][w2].size(); q++){
-//                                  std:: cout << all_faces[e].size() << std::endl;
+//                                                std:: cout << all_faces[e].size() << std::endl;
                                   output_file << wall_indices[v];
                                   if (q == all_faces[e][w2].size()-1){
-                                      output_file << "]],\n";
+                                      output_file << "]]";
+                                      if (e == all_faces[i].size()-1){continue;}
+                                      if (e < all_faces[i].size()-1){
+                                          output_file <<",\n";
+                                      }
                                   }
                                   else {
                                       output_file << ",";
@@ -368,26 +372,25 @@ int main(int argc, const char * argv[]) {
                               }
                           }
 
-//                          for (auto build:all_floor){
-//                              for (Point b:build){
-//                                  output_file<< "\t\t\t\t\"[[\n";
-//                                  output_file << indices[t] << ",]\n";
-//                              }
-//                          }
-//                          "\t\t\t],\n"
-//                          "\t\t\t\"semantics\":{\n"
-//                          "\t\t\t\t\"surfaces\":[\n"
-//                          "\t\t\t\t\t{\"type\":\"GroundSurface\"},\n"
-//                          "\t\t\t\t\t{\"type\":\"WallSurface\"},\n"
-//                          "\t\t\t\t\t{\"type\":\"RoofSurface\"}\n"
-//                          "\t\t\t\t],\n"
-//                          "\t\t\t\t\"values\": [\n"
-//                          "\t\t\t\t]\n"
-//                          "\t\t\t}\n"
-//                          "\t\t}]\n"
-//                          "\t},\n";
 
+            output_file << "\t\t\t],\n"
+                          "\t\t\t\"semantics\":{\n"
+                          "\t\t\t\t\"surfaces\":[\n"
+                          "\t\t\t\t\t{\"type\":\"GroundSurface\"},\n"
+                          "\t\t\t\t\t{\"type\":\"RoofSurface\"},\n"
+                          "\t\t\t\t\t{\"type\":\"WallSurface\"}\n"
+                          "\t\t\t\t],\n"
+                          "\t\t\t\t\"values\": [\n"
+                          "\t\t\t\t" << 0 << ",\n"
+                          "\t\t\t\t" << 1 << ",\n";
 
+                          for (int n = 0; n < all_faces[i].size(); n++){
+                              output_file << "\t\t\t\t" << 2 << ",\n";
+                          }
+            output_file <<"\t\t\t\t]\n"
+                          "\t\t\t}\n"
+                          "\t\t}]\n"
+                          "\t},\n";
             t++;
         }
         output_file<<"},";
