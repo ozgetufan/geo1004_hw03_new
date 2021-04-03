@@ -385,8 +385,11 @@ int main(int argc, const char * argv[]) {
                           "\t\t\t\t" << 1 << ",\n";
 
                           for (int n = 0; n < all_faces[i].size(); n++){
-                              output_file << "\t\t\t\t" << 2 << ",\n";
+                              output_file << "\t\t\t\t" << 2 ;
+                              if (n==all_faces[i].size()-1){continue;}
+                              else { output_file<<",\n";}
                           }
+
             output_file <<"\t\t\t\t]\n"
                           "\t\t\t}\n"
                           "\t\t}]\n"
@@ -412,95 +415,10 @@ int main(int argc, const char * argv[]) {
             }
         }
 
+        output_file << "]\n";
+        output_file << "}";
 
-//            outfile << "\"vertices\": [\n";
-//            std::string d4="";
-//            for (auto const &v:D.vertices()){
-//                outfile<<"      "<<d4<<"[ "<<v->x<<", "<<v->y<<", "<<v->z<<"]\n";
-//                d4=", ";
-//            }
-//                         "\"CityObjects\": {";
-//        }
-//            for (std::vector<Face *> face_list:buildings) {
-//                output_file << "\n\t\"id-" << id_obj << "\" : {\n"
-//                                                        "\t\t\"geometry\": [{\n"
-//                                                        "\t\t\t\"boundaries\": [\n";
-//                int f_count = 0;
-//                for (Face *f:face_list) {
-//                    if (f->isEliminated()) {
-//                        continue;
-//                    }
-//                    if (f_count > 0) {
-//                        output_file << ",\n";
-//                    }
-//                    int length_boundary = 1;
-//                    HalfEdge *e1 = f->exteriorEdge;
-//                    std::vector<int> id_fvertices;
-//                    id_fvertices.push_back(vertex_toId[e1->origin]);
-//                    // Faces boundaries may have different length. We check the length here.
-//                    while (f->exteriorEdge != e1->next) {
-//                        int nextID = vertex_toId[e1->destination];
-//                        id_fvertices.push_back(nextID);
-//                        e1 = e1->next;
-//                        length_boundary++;
-//                    }
-//
-//                    output_file << "\t\t\t\t[[";
-//                    int id_count = 1;
-//                    for (int id:id_fvertices) {
-//                        if (id_count != id_fvertices.size()) {
-//                            output_file << id - 1 << ", ";
-//                            id_count++;
-//                        } else (output_file << id - 1);
-//                    }
-//
-//                    // Holes
-//                    if (f->holes.size() > 0) {
-//                        //std::cout << "Hole size " << f->holes.size() << std::endl;
-//                        for (HalfEdge *hole_e:f->holes) {
-//                            int hole_count = 1;
-//                            std::vector<int> id_holes_vertices;
-//                            output_file << "], \n[";
-//                            HalfEdge *hole_e_next = hole_e;
-//                            // Holes boundaries may have different length. We check the length here.
-//                            do {
-//                                id_holes_vertices.push_back(vertex_toId[hole_e_next->origin]);
-//                                hole_e_next = hole_e_next->next;
-//                            } while (hole_e_next != hole_e);
-//                            for (int id_hole:id_holes_vertices) {
-//                                if (hole_count != id_holes_vertices.size()) {
-//                                    output_file << id_hole - 1 << ", ";
-//                                    hole_count++;
-//                                } else (output_file << id_hole - 1);
-//                            }
-//                            id_holes_vertices.clear();
-//                        }
-//                    }
-//                    // Close boundaries
-//                    output_file << "]]";
-//                    f_count++;
-//                }
-//                output_file << "\t],\n"
-//                               "\t\t\"lod\": 2,\n"
-//                               "\t\t\"type\": \"MultiSurface\"}],\n";
-//                id_obj++;
-//                if (id_obj_count != buildings.size()) {
-//                    output_file << "\t\"type\": \"Building\"\n},";
-//                    id_obj_count++;
-//                } else (output_file << "\t\"type\": \"Building\"\n}");
-//            }
-//        output_file << "\n},";
-//        // Vertices
-//        int vertices_count = 1;
-//        output_file << "\n\"vertices\": \n[";
-//        for (const auto &v : D.vertices()) {
-//            if (vertices_count != vertex_toId.size()) {
-//                output_file << "[" << float(v->x) << ", " << float(v->y) << ", " << float(v->z) << "],\n";
-//                vertices_count++;
-//            } else (output_file << "[" << float(v->x) << ", " << float(v->y) << ", " << float(v->z) << "]");
-//        }
-//        output_file << "\n]\n}";
-//        std::cout << "file is written in " << file_out << std::endl;
+
         output_file.close();
     }
     return 0;
