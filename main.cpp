@@ -195,7 +195,10 @@ int main(int argc, const char * argv[]) {
     std::vector<std::vector<Point>> all_floor;
     std::vector<std::vector<Point>> all_roof;
     std::vector<int> indices;
+    std::vector<int> roof_indices;
     // For walls
+    std::vector<Point> wall_vertices;
+    std::vector<int> wall_indices;
     std::vector<std::vector<Point>> all_floor_new;
     std::vector<std::vector<Point>> all_roof_new;
     std::vector<std::string> ids;
@@ -253,6 +256,14 @@ int main(int argc, const char * argv[]) {
         t1++;
     }
 
+    int t2 = indices.back()+1;
+    for(auto x:all_vertices){
+        roof_indices.push_back(t2);
+        t2++;
+    }
+
+
+
     int l = 0;
     std::vector<std::vector<std::vector<Point>>> all_faces;
     for(auto build: all_floor_new){
@@ -264,6 +275,10 @@ int main(int argc, const char * argv[]) {
             wall.push_back(build[a+1]);
             wall.push_back(all_roof_new[l][a+1]);
             wall.push_back(all_roof_new[l][a]);
+            wall_vertices.push_back(build[a]);
+            wall_vertices.push_back(build[a+1]);
+            wall_vertices.push_back(all_roof_new[l][a+1]);
+            wall_vertices.push_back(all_roof_new[l][a]);
             all_walls.push_back(wall);
         }
         all_faces.push_back(all_walls);
@@ -273,8 +288,15 @@ int main(int argc, const char * argv[]) {
     std::cout << all_roof_new.size() << std::endl;
     std::cout << features.size() << std::endl;
     std::cout << ids.size() << std::endl;
+//    std::cout << "all faces: " << all_faces.size() << std::endl;
 
+    std::cout << "wall vertices: " << wall_vertices.size() << std::endl;
 
+    int t3 = roof_indices.back()+1;
+    for(auto x:wall_vertices){
+        wall_indices.push_back(t3);
+        t3++;
+    }
 
 
     // Write CityJSON
@@ -292,6 +314,7 @@ int main(int argc, const char * argv[]) {
         int id_obj = 1, id_obj_count = 1;
         int t = 0;
         int p = 0;
+        int w = 0;
         for (int i=0; i<all_floor.size(); i++){
             output_file << "\n\t\"id-" << ids[t] << "\" : {\n"
                                                    "\t\t\"type\": \"Building\",\n"
@@ -315,6 +338,22 @@ int main(int argc, const char * argv[]) {
                                   output_file << ",";
                               }
                               p++;
+                          }
+            output_file<< "\t\t\t\t[[";
+                          for (int z = 0; z < all_roof[i].size(); z++){
+                              output_file << roof_indices[w];
+                              if (z == all_roof[i].size()-1){
+                                  output_file << "]],\n";
+                              }
+                              else {
+                                  output_file << ",";
+                              }
+                              w++;
+                          }
+
+                          for (int e = 0; e < all_faces[i].size(); e++){
+
+
                           }
 
 //                          for (auto build:all_floor){
