@@ -291,7 +291,8 @@ int main(int argc, const char * argv[]) {
         // CityObjects
         int id_obj = 1, id_obj_count = 1;
         int t = 0;
-        for (int i=0;i<all_floor.size(); i++){
+        int p = 0;
+        for (int i=0; i<all_floor.size(); i++){
             output_file << "\n\t\"id-" << ids[t] << "\" : {\n"
                                                    "\t\t\"type\": \"Building\",\n"
                                                     "\t\t\"attributes\": {\n"
@@ -304,24 +305,36 @@ int main(int argc, const char * argv[]) {
                           "\t\t\t\"type\": \"Solid\",\n"
                           "\t\t\t\"lod\": 1.2,\n"
                           "\t\t\t\"boundaries\":[\n";
-                          for (auto build:all_floor){
-                              for (Point b:build){
-                                  output_file<< "\t\t\t\t\"[[\n";
-                                  output_file << indices[t] << ",]\n";
+            output_file<< "\t\t\t\t[[";
+                          for (int y = 0; y < all_floor[i].size(); y++){
+                              output_file << indices[p];
+                              if (y == all_floor[i].size()-1){
+                                  output_file << "]],\n";
                               }
+                              else {
+                                  output_file << ",";
+                              }
+                              p++;
                           }
-                          "\t\t\t],\n"
-                          "\t\t\t\"semantics\":{\n"
-                          "\t\t\t\t\"surfaces\":[\n"
-                          "\t\t\t\t\t{\"type\":\"GroundSurface\"},\n"
-                          "\t\t\t\t\t{\"type\":\"WallSurface\"},\n"
-                          "\t\t\t\t\t{\"type\":\"RoofSurface\"}\n"
-                          "\t\t\t\t],\n"
-                          "\t\t\t\t\"values\": [\n"
-                          "\t\t\t\t]\n"
-                          "\t\t\t}\n"
-                          "\t\t}]\n"
-                          "\t},\n";
+
+//                          for (auto build:all_floor){
+//                              for (Point b:build){
+//                                  output_file<< "\t\t\t\t\"[[\n";
+//                                  output_file << indices[t] << ",]\n";
+//                              }
+//                          }
+//                          "\t\t\t],\n"
+//                          "\t\t\t\"semantics\":{\n"
+//                          "\t\t\t\t\"surfaces\":[\n"
+//                          "\t\t\t\t\t{\"type\":\"GroundSurface\"},\n"
+//                          "\t\t\t\t\t{\"type\":\"WallSurface\"},\n"
+//                          "\t\t\t\t\t{\"type\":\"RoofSurface\"}\n"
+//                          "\t\t\t\t],\n"
+//                          "\t\t\t\t\"values\": [\n"
+//                          "\t\t\t\t]\n"
+//                          "\t\t\t}\n"
+//                          "\t\t}]\n"
+//                          "\t},\n";
 
 
             t++;
@@ -352,7 +365,7 @@ int main(int argc, const char * argv[]) {
 //                outfile<<"      "<<d4<<"[ "<<v->x<<", "<<v->y<<", "<<v->z<<"]\n";
 //                d4=", ";
 //            }
-                         "\"CityObjects\": {";
+//                         "\"CityObjects\": {";
 //        }
 //            for (std::vector<Face *> face_list:buildings) {
 //                output_file << "\n\t\"id-" << id_obj << "\" : {\n"
