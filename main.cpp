@@ -315,6 +315,8 @@ int main(int argc, const char * argv[]) {
         int t = 0;
         int p = 0;
         int w = 0;
+        int w2 = 0;
+        int v = 0;
         for (int i=0; i<all_floor.size(); i++){
             output_file << "\n\t\"id-" << ids[t] << "\" : {\n"
                                                    "\t\t\"type\": \"Building\",\n"
@@ -352,8 +354,18 @@ int main(int argc, const char * argv[]) {
                           }
 
                           for (int e = 0; e < all_faces[i].size(); e++){
-
-
+                              output_file << "\t\t\t\t[[";
+                              for (int q = 0; q < all_faces[e][w2].size(); q++){
+//                                  std:: cout << all_faces[e].size() << std::endl;
+                                  output_file << wall_indices[v];
+                                  if (q == all_faces[e][w2].size()-1){
+                                      output_file << "]],\n";
+                                  }
+                                  else {
+                                      output_file << ",";
+                                  }
+                                  v++;
+                              }
                           }
 
 //                          for (auto build:all_floor){
