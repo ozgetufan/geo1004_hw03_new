@@ -191,9 +191,10 @@ int main(int argc, const char * argv[]) {
 
 
 //  d::vector<double> coord;
-    std::vector<std::vector<Point>> all_vertices;
+    std::vector<Point> all_vertices;
     std::vector<std::vector<Point>> all_floor;
     std::vector<std::vector<Point>> all_roof;
+    std::vector<int> indices;
     // For walls
     std::vector<std::vector<Point>> all_floor_new;
     std::vector<std::vector<Point>> all_roof_new;
@@ -224,6 +225,7 @@ int main(int argc, const char * argv[]) {
                 Point roof = {coord[x][0], coord[x][1], roof_height};
                 floor_vertices.push_back(base);
                 roof_vertices.push_back(roof);
+                all_vertices.push_back(base);
             }
         }
         all_floor.push_back(floor_vertices);
@@ -245,8 +247,11 @@ int main(int argc, const char * argv[]) {
         all_roof_new.push_back(new_roof_vertices);
     }
 
-
-
+    int t1 = 1;
+    for(auto x:all_vertices){
+        indices.push_back(t1);
+        t1++;
+    }
 
     int l = 0;
     std::vector<std::vector<std::vector<Point>>> all_faces;
@@ -286,7 +291,7 @@ int main(int argc, const char * argv[]) {
         // CityObjects
         int id_obj = 1, id_obj_count = 1;
         int t = 0;
-        for (auto build: all_floor_new){
+        for (int i=0;i<all_floor.size(); i++){
             output_file << "\n\t\"id-" << ids[t] << "\" : {\n"
                                                    "\t\t\"type\": \"Building\",\n"
                                                     "\t\t\"attributes\": {\n"
@@ -298,7 +303,13 @@ int main(int argc, const char * argv[]) {
             output_file<< "\t\t\"geometry\":[{\n"
                           "\t\t\t\"type\": \"Solid\",\n"
                           "\t\t\t\"lod\": 1.2,\n"
-                          "\t\t\t\"boundaries\":[\n"
+                          "\t\t\t\"boundaries\":[\n";
+                          for (auto build:all_floor){
+                              for (Point b:build){
+                                  output_file<< "\t\t\t\t\"[[\n";
+                                  output_file << indices[t] << ",]\n";
+                              }
+                          }
                           "\t\t\t],\n"
                           "\t\t\t\"semantics\":{\n"
                           "\t\t\t\t\"surfaces\":[\n"
@@ -316,7 +327,33 @@ int main(int argc, const char * argv[]) {
             t++;
         }
         output_file<<"},";
+        output_file<<"\"vertices\": [\n";
+        for (auto v:all_floor) {
+            for (Point p:v) {
+                output_file << "[" << p.x << "," << p.y << "," << p.z << "],\n";
+            }
+        }
+        for (auto v:all_roof) {
+            for (Point p:v) {
+                output_file << "[" << p.x << "," << p.y << "," << p.z << "],\n";
+            }
+        }
+        for (auto v:all_faces) {
+            for (auto p:v) {
+                for (Point p1:p)
+                output_file << "[" << p1.x << "," << p1.y << "," << p1.z << "],\n";
+            }
+        }
 
+
+//            outfile << "\"vertices\": [\n";
+//            std::string d4="";
+//            for (auto const &v:D.vertices()){
+//                outfile<<"      "<<d4<<"[ "<<v->x<<", "<<v->y<<", "<<v->z<<"]\n";
+//                d4=", ";
+//            }
+                         "\"CityObjects\": {";
+//        }
 //            for (std::vector<Face *> face_list:buildings) {
 //                output_file << "\n\t\"id-" << id_obj << "\" : {\n"
 //                                                        "\t\t\"geometry\": [{\n"
