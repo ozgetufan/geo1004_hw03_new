@@ -279,6 +279,9 @@ int main(int argc, const char * argv[]) {
         output_file << "{\n"
                        "\"type\": \"CityJSON\",\n"
                        "\"version\": \"1.0\",\n"
+                       "\"metadata\": {"
+                       "\"referenceSystem\":\"urn:ogc:def:crs:EPSG::7415\"\n"
+                       "\t\t},\n"
                        "\"CityObjects\": {";
         // CityObjects
         int id_obj = 1, id_obj_count = 1;
@@ -292,8 +295,28 @@ int main(int argc, const char * argv[]) {
                                                     "\t\t\t\"storeysAboveGround\": " << all_storeys[t] << "\n"
                                                     "\t\t},\n"
                                                     ;
+            output_file<< "\t\t\"geometry\":[{\n"
+                          "\t\t\t\"type\": \"Solid\",\n"
+                          "\t\t\t\"lod\": 1.2,\n"
+                          "\t\t\t\"boundaries\":[\n"
+                          "\t\t\t],\n"
+                          "\t\t\t\"semantics\":{\n"
+                          "\t\t\t\t\"surfaces\":[\n"
+                          "\t\t\t\t\t{\"type\":\"GroundSurface\"},\n"
+                          "\t\t\t\t\t{\"type\":\"WallSurface\"},\n"
+                          "\t\t\t\t\t{\"type\":\"RoofSurface\"}\n"
+                          "\t\t\t\t],\n"
+                          "\t\t\t\t\"values\": [\n"
+                          "\t\t\t\t]\n"
+                          "\t\t\t}\n"
+                          "\t\t}]\n"
+                          "\t},\n";
+
+
             t++;
         }
+        output_file<<"},";
+
 //            for (std::vector<Face *> face_list:buildings) {
 //                output_file << "\n\t\"id-" << id_obj << "\" : {\n"
 //                                                        "\t\t\"geometry\": [{\n"
