@@ -8,96 +8,11 @@
 #include "json-develop/single_include/nlohmann/json.hpp"
 using json = nlohmann::json;
 
-//void readGEOJSON (const char *file_in){
-//
-//    std::ifstream i(file_in);
-//    json j;
-//    i >> j;
-//
-//
-////    std::vector<double> coord;
-//    std::vector<std::vector<Point>> all_vertices;
-//    std::vector<std::vector<Point>> all_floor;
-//    std::vector<std::vector<Point>> all_roof;
-//    // For walls
-//    std::vector<std::vector<Point>> all_floor_new;
-//    std::vector<std::vector<Point>> all_roof_new;
-//    std::vector<std::string> ids;
-//    //
-//    auto features = j["features"];
-//    for (auto &all:features){
-//        auto coordinates =all["geometry"]["coordinates"];
-//        auto id = all["properties"]["identificatie"];
-//        ids.push_back(id);
-//        auto year_of_construction =all["properties"]["bouwjaar"];
-//        double roof_height = all["properties"]["z.median"];
-//        auto storeys = ceil(roof_height/3);
-//        std::vector<std::vector<Point>> faces;
-//        std::vector<Point> floor_vertices;
-//        std::vector<Point> roof_vertices;
-//
-//        // Vertices for determining roof and floor
-//        for (auto coord:coordinates) {
-//            for (int x = 0; x < coord.size()-1; x++) {
-//                Point base = {coord[x][0], coord[x][1], coord[x][2]};
-//                Point roof = {coord[x][0], coord[x][1], roof_height};
-//                floor_vertices.push_back(base);
-//                roof_vertices.push_back(roof);
-//            }
-//        }
-//        all_floor.push_back(floor_vertices);
-//        all_roof.push_back(roof_vertices);
-//
-//
-//        // Vertices for determining walls
-//        std::vector<Point> new_floor_vertices;
-//        std::vector<Point> new_roof_vertices;
-//        for (auto coord_new:coordinates) {
-//            for (int x = 0; x < coord_new.size(); x++) {
-//                Point base_new = {coord_new[x][0], coord_new[x][1], coord_new[x][2]};
-//                Point roof_new = {coord_new[x][0], coord_new[x][1], roof_height};
-//                new_floor_vertices.push_back(base_new);
-//                new_roof_vertices.push_back(roof_new);
-//            }
-//        }
-//        all_floor_new.push_back(new_floor_vertices);
-//        all_roof_new.push_back(new_roof_vertices);
-//    }
-//
-////    std::cout << all_floor.size() << std::endl;
-////    std::cout << all_roof.size() << std::endl;
-////    std::cout << features.size() << std::endl;
-//
-//
-//    int k = 0;
-//    std::vector<std::vector<std::vector<Point>>> all_faces;
-//    for(auto build: all_floor_new){
-//        std::vector<std::vector<Point>> all_walls;
-////        std::cout << build.size() << std::endl;
-//        for(int a = 0; a < build.size()-1; a++){
-//            std::vector<Point> wall;
-//            wall.push_back(build[a]);
-//            wall.push_back(build[a+1]);
-//            wall.push_back(all_roof_new[k][a+1]);
-//            wall.push_back(all_roof_new[k][a]);
-//            all_walls.push_back(wall);
-//        }
-//        all_faces.push_back(all_walls);
-//        k++;
-//    }
-////    std::cout << "Number of faces: " << all_faces[0].size() << std::endl;
-////    std::cout << all_roof_new.size() << std::endl;
-////    std::cout << features.size() << std::endl;
-////    std::cout << ids.size() << std::endl;
-//}
 
-
-
-
-std::map<int,Point> vmap;
-int i=0;
-std::vector<Point> vertices;
-std::vector<std::vector<unsigned int>> faces;
+//std::map<int,Point> vmap;
+//int i=0;
+//std::vector<Point> vertices;
+//std::vector<std::vector<unsigned int>> faces;
 
 //float minx = INFINITY;
 //float miny = INFINITY;
@@ -207,7 +122,7 @@ int main(int argc, const char * argv[]) {
     std::vector<double> all_storeys;
     //
     auto features = j["features"];
-    for (auto &all:features){
+    for (const auto &all:features){
         auto coordinates =all["geometry"]["coordinates"];
         auto id = all["properties"]["identificatie"];
         ids.push_back(id);
@@ -222,6 +137,8 @@ int main(int argc, const char * argv[]) {
         std::vector<Point> roof_vertices;
 
         // Vertices for determining roof and floor
+//        std::cout << coordinates << std::endl;
+//        exit(1);
         for (auto coord:coordinates) {
             for (int x = 0; x < coord.size()-1; x++) {
                 Point base = {coord[x][0], coord[x][1], coord[x][2]};
@@ -250,7 +167,7 @@ int main(int argc, const char * argv[]) {
         all_roof_new.push_back(new_roof_vertices);
     }
 
-    int t1 = 1;
+    int t1 = 0;
     for(auto x:all_vertices){
         indices.push_back(t1);
         t1++;
@@ -261,7 +178,6 @@ int main(int argc, const char * argv[]) {
         roof_indices.push_back(t2);
         t2++;
     }
-
 
 
     int l = 0;
@@ -315,9 +231,8 @@ int main(int argc, const char * argv[]) {
         int t = 0;
         int p = 0;
         int w = 0;
-        int w2 = 0;
         int v = 0;
-        for (int i=0; i<all_floor.size(); i++){
+        for (int i=0; i < all_floor.size(); i++){
             output_file << "\n\t\"id-" << ids[t] << "\" : {\n"
                                                    "\t\t\"type\": \"Building\",\n"
                                                     "\t\t\"attributes\": {\n"
@@ -327,12 +242,14 @@ int main(int argc, const char * argv[]) {
                                                     "\t\t},\n"
                                                     ;
             output_file<< "\t\t\"geometry\":[{\n"
-                          "\t\t\t\"type\": \"Solid\",\n"
+                          "\t\t\t\"type\": \"MultiSurface\",\n"
                           "\t\t\t\"lod\": 1.2,\n"
                           "\t\t\t\"boundaries\":[\n";
             output_file<< "\t\t\t\t[[";
                           for (int y = 0; y < all_floor[i].size(); y++){
                               output_file << indices[p];
+//                              std::cout << "indices p: " << indices[p+15] << std::endl;
+//                              exit(1);
                               if (y == all_floor[i].size()-1){
                                   output_file << "]],\n";
                               }
@@ -355,20 +272,21 @@ int main(int argc, const char * argv[]) {
 
                           for (int e = 0; e < all_faces[i].size(); e++){
                               output_file << "\t\t\t\t[[";
-                              for (int q = 0; q < all_faces[e][w2].size(); q++){
+                              for (int q = 0; q < all_faces[i][e].size(); q++){
 //                                                std:: cout << all_faces[e].size() << std::endl;
                                   output_file << wall_indices[v];
-                                  if (q == all_faces[e][w2].size()-1){
+                                  if (q == all_faces[i][e].size()-1){
                                       output_file << "]]";
-                                      if (e == all_faces[i].size()-1){continue;}
-                                      if (e < all_faces[i].size()-1){
-                                          output_file <<",\n";
-                                      }
-                                  }
-                                  else {
+
+                                  } else {
                                       output_file << ",";
                                   }
                                   v++;
+                              }
+                              if (e == all_faces[i].size()-1){
+                                  continue;
+                              } else {
+                                  output_file <<",\n";
                               }
                           }
 
