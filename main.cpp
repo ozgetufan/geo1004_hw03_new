@@ -107,6 +107,7 @@ int main(int argc, const char * argv[]) {
 
 //  d::vector<double> coord;
     std::vector<Point> all_vertices;
+    std::vector<Point> all_roof_vertices;
     std::vector<std::vector<Point>> all_floor;
     std::vector<std::vector<Point>> all_roof;
     std::vector<int> indices;
@@ -146,6 +147,7 @@ int main(int argc, const char * argv[]) {
                 floor_vertices.push_back(base);
                 roof_vertices.push_back(roof);
                 all_vertices.push_back(base);
+                all_roof_vertices.push_back(roof);
             }
         }
         all_floor.push_back(floor_vertices);
@@ -174,7 +176,7 @@ int main(int argc, const char * argv[]) {
     }
 
     int t2 = indices.back()+1;
-    for(auto x:all_vertices){
+    for(auto x:all_roof_vertices){
         roof_indices.push_back(t2);
         t2++;
     }
@@ -310,8 +312,15 @@ int main(int argc, const char * argv[]) {
 
             output_file <<"\t\t\t\t]\n"
                           "\t\t\t}\n"
-                          "\t\t}]\n"
-                          "\t},\n";
+                          "\t\t}]\n";
+
+            if (i == all_floor.size()-1){
+                output_file << "\t}\n";
+            }
+            else {
+                output_file << "\t},\n";
+            }
+
             t++;
         }
         output_file<<"},";
@@ -326,10 +335,23 @@ int main(int argc, const char * argv[]) {
                 output_file << "[" << p.x << "," << p.y << "," << p.z << "],\n";
             }
         }
-        for (auto v:all_faces) {
-            for (auto p:v) {
-                for (Point p1:p)
-                output_file << "[" << p1.x << "," << p1.y << "," << p1.z << "],\n";
+//        for (auto v:all_faces) {
+//            for (auto p:v) {
+//                for (Point p1:p)
+//                output_file << "[" << p1.x << "," << p1.y << "," << p1.z << "],\n";
+//            }
+//        }
+
+        for (int each_build = 0; each_build < all_faces.size(); each_build++) {
+            for (int each_wall = 0; each_wall < all_faces[each_build].size(); each_wall++) {
+                for (int each_point = 0; each_point < all_faces[each_build][each_wall].size(); each_point++){
+                    Point p_curr = all_faces[each_build][each_wall][each_point];
+                    if (each_build == all_faces.size() - 1 && each_wall == all_faces[each_build].size() - 1 && each_point == all_faces[each_build][each_wall].size() - 1) {
+                        output_file << "[" << p_curr.x << "," << p_curr.y << "," << p_curr.z << "]\n";
+                    } else {
+                        output_file << "[" << p_curr.x << "," << p_curr.y << "," << p_curr.z << "],\n";
+                    }
+                }
             }
         }
 
