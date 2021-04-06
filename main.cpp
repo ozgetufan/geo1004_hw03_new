@@ -100,27 +100,17 @@ int main(int argc, const char * argv[]) {
 //    readGEOJSON(file_in);
 
 
-    std::ifstream k("../one_building.json");
+    std::ifstream k("../cpp_input.json");
     json j;
     k >> j;
 
-
-//  d::vector<double> coord;
-    std::vector<Point> all_vertices;
-    std::vector<Point> all_roof_vertices;
-    std::vector<std::vector<Point>> all_floor;
     std::vector<std::vector<std::vector<Point>>> all_floor_rings;
     std::vector<std::vector<std::vector<Point>>> all_roof_rings;
-    std::vector<std::vector<Point>> all_roof;
-    std::vector<int> indices;
     std::vector<int> new_indices;
-    std::vector<int> roof_indices;
     std::vector<int> new_roof_indices;
     // For walls
     std::vector<Point> wall_vertices;
     std::vector<int> wall_indices;
-    std::vector<std::vector<Point>> all_floor_new;
-    std::vector<std::vector<Point>> all_roof_new;
     std::vector<std::vector<std::vector<Point>>> all_floor_rings_new;
     std::vector<std::vector<std::vector<Point>>> all_roof_rings_new;
     std::vector<std::string> ids;
@@ -158,8 +148,8 @@ int main(int argc, const char * argv[]) {
                 Point roof = {coord[x][0], coord[x][1], roof_height};
                 floor_vertices.push_back(base);
                 roof_vertices.push_back(roof);
-                all_vertices.push_back(base);
-                all_roof_vertices.push_back(roof);
+//                all_vertices.push_back(base);
+//                all_roof_vertices.push_back(roof);
             }
             all_floor_inside.push_back(floor_vertices);
             all_roof_inside.push_back(roof_vertices);
@@ -212,46 +202,58 @@ int main(int argc, const char * argv[]) {
             }
         }
     }
-//    exit(1);
-//    for(auto x:all_vertices){
-//        indices.push_back(t1);
-//        t1++;
+
+
+//    int l = 0;
+//    int m = 0;
+//    std::vector<std::vector<std::vector<std::vector<Point>>>> all_faces;
+//    for(const auto& build: all_floor_rings_new){
+//        std::vector<std::vector<std::vector<Point>>> all_walls;
+////    std::cout << build.size() << std::endl;
+//        for (const auto& ring: build){
+////            std::vector<std::vector<Point>> ring_wall;
+//            std::vector<std::vector<Point>> walls;
+//            for(int a = 0; a < ring.size()-1; a++){
+//                std::vector<Point> wall;
+//                wall.push_back(ring[a]);
+//                wall.push_back(ring[a+1]);
+//                wall.push_back(all_roof_rings_new[m][l][a+1]);
+//                wall.push_back(all_roof_rings_new[m][l][a]);
+//                wall_vertices.push_back(ring[a]);
+//                wall_vertices.push_back(ring[a+1]);
+//                wall_vertices.push_back(all_roof_rings_new[m][l][a+1]);
+//                wall_vertices.push_back(all_roof_rings_new[m][l][a]);
+//                walls.push_back(wall);
+//            }
+//
+//            all_walls.push_back(walls);
+//            l++;
+//        }
+//        all_faces.push_back(all_walls);
+//        m++;
 //    }
-
-//    int t2 = indices.back()+1;
-//    for(auto x:all_roof_vertices){
-//        roof_indices.push_back(t2);
-//        t2++;
-//    }
-
-
-    int l = 0;
-    int m = 0;
     std::vector<std::vector<std::vector<std::vector<Point>>>> all_faces;
-    for(const auto& build: all_floor_rings_new){
+    for(int build = 0; build < all_floor_rings_new.size(); build++){
         std::vector<std::vector<std::vector<Point>>> all_walls;
 //    std::cout << build.size() << std::endl;
-        for (const auto& ring: build){
+        for (int ring = 0; ring < all_floor_rings_new[build].size(); ring++){
 //            std::vector<std::vector<Point>> ring_wall;
             std::vector<std::vector<Point>> walls;
-            for(int a = 0; a < ring.size()-1; a++){
+            for(int a = 0; a < all_floor_rings_new[build][ring].size()-1; a++){
                 std::vector<Point> wall;
-                wall.push_back(ring[a]);
-                wall.push_back(ring[a+1]);
-                wall.push_back(all_roof_rings_new[m][l][a+1]);
-                wall.push_back(all_roof_rings_new[m][l][a]);
-                wall_vertices.push_back(ring[a]);
-                wall_vertices.push_back(ring[a+1]);
-                wall_vertices.push_back(all_roof_rings_new[m][l][a+1]);
-                wall_vertices.push_back(all_roof_rings_new[m][l][a]);
+                wall.push_back(all_floor_rings_new[build][ring][a]);
+                wall.push_back(all_floor_rings_new[build][ring][a+1]);
+                wall.push_back(all_roof_rings_new[build][ring][a+1]);
+                wall.push_back(all_roof_rings_new[build][ring][a]);
+                wall_vertices.push_back(all_floor_rings_new[build][ring][a]);
+                wall_vertices.push_back(all_floor_rings_new[build][ring][a+1]);
+                wall_vertices.push_back(all_roof_rings_new[build][ring][a+1]);
+                wall_vertices.push_back(all_roof_rings_new[build][ring][a]);
                 walls.push_back(wall);
             }
-
             all_walls.push_back(walls);
-            l++;
         }
         all_faces.push_back(all_walls);
-        m++;
     }
 //    std::cout << "Number of faces: " << all_faces[0].size() << std::endl;
 //    std::cout << all_roof_new.size() << std::endl;
@@ -297,7 +299,7 @@ int main(int argc, const char * argv[]) {
                                          "\t\t\t\"storeysAboveGround\": " << all_storeys[t] << "\n"
                                                                                                "\t\t},\n";
             output_file << "\t\t\"geometry\":[{\n"
-                           "\t\t\t\"type\": \"MultiSurface\",\n"
+                           "\t\t\t\"type\": \"Solid\",\n"
                            "\t\t\t\"lod\": 1.2,\n"
                            "\t\t\t\"boundaries\":[[\n";
             output_file << "[";
