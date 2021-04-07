@@ -100,7 +100,7 @@ int main(int argc, const char * argv[]) {
 //    readGEOJSON(file_in);
 
 
-    std::ifstream k("../cpp_input.json");
+    std::ifstream k("../one_building.json");
     json j;
     k >> j;
 
@@ -117,7 +117,7 @@ int main(int argc, const char * argv[]) {
     std::vector<std::string> years;
     std::vector<double> heights;
     std::vector<double> all_storeys;
-    //
+
     auto features = j["features"];
     for (const auto &all:features){
         auto coordinates =all["geometry"]["coordinates"];
@@ -134,12 +134,8 @@ int main(int argc, const char * argv[]) {
         std::vector<std::vector<Point>> all_roof_inside;
         std::vector<std::vector<Point>> all_floor_inside_new;
         std::vector<std::vector<Point>> all_roof_inside_new;
-//        std::vector<Point> floor_vertices;
-//        std::vector<Point> roof_vertices;
 
         // Vertices for determining roof and floor
-//        std::cout << coordinates << std::endl;
-//        exit(1);
         for (auto coord:coordinates) {
             std::vector<Point> floor_vertices;
             std::vector<Point> roof_vertices;
@@ -148,16 +144,13 @@ int main(int argc, const char * argv[]) {
                 Point roof = {coord[x][0], coord[x][1], roof_height};
                 floor_vertices.push_back(base);
                 roof_vertices.push_back(roof);
-//                all_vertices.push_back(base);
-//                all_roof_vertices.push_back(roof);
             }
             all_floor_inside.push_back(floor_vertices);
             all_roof_inside.push_back(roof_vertices);
         }
         all_floor_rings.push_back(all_floor_inside);
         all_roof_rings.push_back(all_roof_inside);
-//        all_floor.push_back(floor_vertices);
-//        all_roof.push_back(roof_vertices);
+
 
 
 //         Vertices for determining walls
@@ -175,11 +168,7 @@ int main(int argc, const char * argv[]) {
         }
         all_floor_rings_new.push_back(all_floor_inside_new);
         all_roof_rings_new.push_back(all_roof_inside_new);
-
     }
-
-//    std::cout << "rings " << all_floor_rings[0].size() << std::endl;
-//    exit(1);
 
     int t1 = 0;
     for (const auto& building: all_floor_rings){
@@ -190,8 +179,6 @@ int main(int argc, const char * argv[]) {
             }
         }
     }
-//    std::cout << "indices size: " << new_indices.size() << std::endl;
-//    std::cout << new_indices.back() << std::endl;
 
     int t2 = new_indices.back()+1;
     for (const auto& building: all_roof_rings){
@@ -203,41 +190,10 @@ int main(int argc, const char * argv[]) {
         }
     }
 
-
-//    int l = 0;
-//    int m = 0;
-//    std::vector<std::vector<std::vector<std::vector<Point>>>> all_faces;
-//    for(const auto& build: all_floor_rings_new){
-//        std::vector<std::vector<std::vector<Point>>> all_walls;
-////    std::cout << build.size() << std::endl;
-//        for (const auto& ring: build){
-////            std::vector<std::vector<Point>> ring_wall;
-//            std::vector<std::vector<Point>> walls;
-//            for(int a = 0; a < ring.size()-1; a++){
-//                std::vector<Point> wall;
-//                wall.push_back(ring[a]);
-//                wall.push_back(ring[a+1]);
-//                wall.push_back(all_roof_rings_new[m][l][a+1]);
-//                wall.push_back(all_roof_rings_new[m][l][a]);
-//                wall_vertices.push_back(ring[a]);
-//                wall_vertices.push_back(ring[a+1]);
-//                wall_vertices.push_back(all_roof_rings_new[m][l][a+1]);
-//                wall_vertices.push_back(all_roof_rings_new[m][l][a]);
-//                walls.push_back(wall);
-//            }
-//
-//            all_walls.push_back(walls);
-//            l++;
-//        }
-//        all_faces.push_back(all_walls);
-//        m++;
-//    }
     std::vector<std::vector<std::vector<std::vector<Point>>>> all_faces;
     for(int build = 0; build < all_floor_rings_new.size(); build++){
         std::vector<std::vector<std::vector<Point>>> all_walls;
-//    std::cout << build.size() << std::endl;
         for (int ring = 0; ring < all_floor_rings_new[build].size(); ring++){
-//            std::vector<std::vector<Point>> ring_wall;
             std::vector<std::vector<Point>> walls;
             for(int a = 0; a < all_floor_rings_new[build][ring].size()-1; a++){
                 std::vector<Point> wall;
@@ -255,22 +211,12 @@ int main(int argc, const char * argv[]) {
         }
         all_faces.push_back(all_walls);
     }
-//    std::cout << "Number of faces: " << all_faces[0].size() << std::endl;
-//    std::cout << all_roof_new.size() << std::endl;
-//    std::cout << features.size() << std::endl;
-//    std::cout << ids.size() << std::endl;
-////    std::cout << "all faces: " << all_faces.size() << std::endl;
-//
-//    std::cout << "wall vertices: " << wall_vertices.size() << std::endl;
-//
-    std::cout << new_roof_indices.back() << std::endl;
+
     int t3 = new_roof_indices.back()+1;
     for(auto x:wall_vertices){
         wall_indices.push_back(t3);
         t3++;
     }
-
-    std::cout << t3 << std::endl;
 
     // Write CityJSON
     std::ofstream output_file(file_out);
@@ -284,7 +230,6 @@ int main(int argc, const char * argv[]) {
                        "\t\t},\n"
                        "\"CityObjects\": {";
         // CityObjects
-        int id_obj = 1, id_obj_count = 1;
         int t = 0;
         int p = 0;
         int w = 0;
@@ -305,10 +250,9 @@ int main(int argc, const char * argv[]) {
             output_file << "[";
             for (int y = 0; y < all_floor_rings[i].size(); y++) {
                 output_file << "\t\t\t\t[";
+                std::reverse(all_floor_rings[i][y].begin(), all_floor_rings[i][y].end());
                 for (int z = 0; z < all_floor_rings[i][y].size(); z++) {
                     output_file << new_indices[p];
-//                              std::cout << "indices p: " << indices[p+15] << std::endl;
-//                              exit(1);
                     if (z == all_floor_rings[i][y].size() - 1) {
                         if (y == all_floor_rings[i].size() - 1) {
                             output_file << "]\n";
@@ -328,8 +272,6 @@ int main(int argc, const char * argv[]) {
                 output_file << "\t\t\t\t[";
                 for (int z = 0; z < all_roof_rings[i][y].size(); z++) {
                     output_file << new_roof_indices[w];
-//                              std::cout << "indices p: " << indices[p+15] << std::endl;
-//                              exit(1);
                     if (z == all_roof_rings[i][y].size() - 1) {
                         if (y == all_roof_rings[i].size() - 1) {
                             output_file << "]\n";
@@ -344,16 +286,16 @@ int main(int argc, const char * argv[]) {
 
             }
             output_file << "],";
-            int ctr1 = 0;
-            int ctr2 = 0;
-            int ctr3 = 0;
+//            int ctr1 = 0;
+//            int ctr2 = 0;
+//            int ctr3 = 0;
             for (int rings = 0; rings < all_faces[i].size(); rings++){
                 for (int walls = 0; walls < all_faces[i][rings].size(); walls++){
                     output_file << "\n\t\t\t\t[[";
                     for (int point = 0; point < all_faces[i][rings][walls].size(); point++){
                         output_file << wall_indices[v];
                         v++;
-                        ctr3++;
+//                        ctr3++;
                         if (point == all_faces[i][rings][walls].size()-1){
                             continue;
                         } else {
@@ -366,15 +308,15 @@ int main(int argc, const char * argv[]) {
                     } else {
                         output_file <<",";
                     }
-                    ctr2++;
+//                    ctr2++;
                 }
-                ctr1++;
+//                ctr1++;
             }
 
-            std::cout << "v " << v << std::endl;
-            std::cout << "ctr1 " << ctr1 << std::endl;
-            std::cout << "ctr2 " << ctr2 << std::endl;
-            std::cout << "ctr3 " << ctr3 << std::endl;
+//            std::cout << "v " << v << std::endl;
+//            std::cout << "ctr1 " << ctr1 << std::endl;
+//            std::cout << "ctr2 " << ctr2 << std::endl;
+//            std::cout << "ctr3 " << ctr3 << std::endl;
 
             output_file << "\t\t\t]],\n"
                           "\t\t\t\"semantics\":{\n"
@@ -452,5 +394,4 @@ int main(int argc, const char * argv[]) {
         output_file.close();
     }
     return 0;
-
 }
