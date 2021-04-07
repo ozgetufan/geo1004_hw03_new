@@ -37,8 +37,9 @@ int main(int argc, const char * argv[]) {
         auto coordinates =all["geometry"]["coordinates"];
         auto id = all["properties"]["identificatie"];
         ids.push_back(id);
-        auto year_of_construction =all["properties"]["bouwjaar"];
-        years.push_back(year_of_construction);
+        std::string year_of_construction =all["properties"]["bouwjaar"];
+        std::string just_year = year_of_construction.substr(0, 4);
+        years.push_back(just_year);
         double roof_height = all["properties"]["z.median"];
         heights.push_back(roof_height);
         auto storeys = ceil(roof_height/3);
@@ -51,7 +52,6 @@ int main(int argc, const char * argv[]) {
 
 
         // Vertices for determining roof and floor
-
         for (auto coord:coordinates) {
             std::vector<Point> floor_vertices;
             std::vector<Point> roof_vertices;
@@ -60,7 +60,6 @@ int main(int argc, const char * argv[]) {
                 Point roof = {coord[x][0], coord[x][1], roof_height};
                 floor_vertices.push_back(base);
                 roof_vertices.push_back(roof);
-
             }
             all_floor_inside.push_back(floor_vertices);
             all_roof_inside.push_back(roof_vertices);
@@ -160,7 +159,7 @@ int main(int argc, const char * argv[]) {
             output_file << "\n\t\"id-" << ids[t] << "\" : {\n"
                                                     "\t\t\"type\": \"Building\",\n"
                                                     "\t\t\"attributes\": {\n"
-                                                    "\t\t\t\"yearOfConstruction\": \"" << years[t] << "\",\n"
+                                                    "\t\t\t\"yearOfConstruction\": " << std::stoi(years[t]) << ",\n"
                                                                                                       "\t\t\t\"measuredHeight\": "
                         << heights[t] << ",\n"
                                          "\t\t\t\"storeysAboveGround\": " << all_storeys[t] << "\n"
